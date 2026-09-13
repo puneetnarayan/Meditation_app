@@ -6,6 +6,7 @@ import { PageContainer } from '../components/common/PageContainer'
 import { categories } from '../data/categories'
 import { instructors } from '../data/instructors'
 import { useFavorites } from '../hooks/useFavorites'
+import { useOfflineDownload } from '../hooks/useOfflineDownload'
 import { getAllMeditations } from '../services/content/contentStore'
 import { getMeditationById } from '../utils/meditationQueries'
 import { formatSecondsAsClock } from '../utils/time'
@@ -17,6 +18,7 @@ export function MeditationDetailsPage() {
   const navigate = useNavigate()
   const meditation = id ? getMeditationById(getAllMeditations(), id) : undefined
   const { isFavorite, toggleFavorite } = useFavorites()
+  const offlineDownload = useOfflineDownload(meditation)
 
   if (!meditation) {
     return (
@@ -69,6 +71,52 @@ export function MeditationDetailsPage() {
         <Button onClick={() => navigate(`/player/${meditation.id}`)}>
           Start meditation
         </Button>
+
+        {meditation.audioUrl ? (
+          <div className={styles.offline}>
+            {offlineDownload.status === 'downloaded' && (
+              <>
+                <p className={styles.offlineStatus}>
+                  Downloaded for offline listening
+                </p>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => void offlineDownload.remove()}
+                >
+                  Remove download
+                </Button>
+              </>
+            )}
+            {offlineDownload.status === 'downloading' && (
+              <p className={styles.offlineStatus} role="status">
+                Downloading…
+              </p>
+            )}
+            {(offlineDownload.status === 'idle' ||
+              offlineDownload.status === 'error') && (
+              <>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => void offlineDownload.download()}
+                  disabled={!offlineDownload.isSupported}
+                >
+                  Download for offline
+                </Button>
+                {offlineDownload.status === 'error' && (
+                  <p className={styles.offlineError} role="alert">
+                    {offlineDownload.errorMessage ?? 'Download failed.'}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        ) : (
+          <p className={styles.offlineStatus}>
+            Offline listening isn't available for this meditation yet.
+          </p>
+        )}
       </article>
     </PageContainer>
   )

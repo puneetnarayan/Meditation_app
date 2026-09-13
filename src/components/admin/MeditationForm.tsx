@@ -33,6 +33,7 @@ const EMPTY_VALUES: NewMeditationInput = {
   type: 'guided',
   difficulty: 'beginner',
   tags: [],
+  audioUrl: undefined,
   isPremium: false,
   isFeatured: false,
 }
@@ -59,6 +60,7 @@ export function MeditationForm({
     values.difficulty,
   )
   const [tags, setTags] = useState<MeditationTag[]>(values.tags)
+  const [audioUrl, setAudioUrl] = useState(values.audioUrl ?? '')
   const [isFeatured, setIsFeatured] = useState(values.isFeatured)
   const [isPremium, setIsPremium] = useState(values.isPremium)
 
@@ -83,6 +85,7 @@ export function MeditationForm({
       type,
       difficulty,
       tags,
+      audioUrl: audioUrl.trim() || undefined,
       isPremium,
       isFeatured,
     })
@@ -166,6 +169,14 @@ export function MeditationForm({
           </option>
         ))}
       </Select>
+
+      <Input
+        label="Audio URL (optional)"
+        type="url"
+        placeholder="https://…"
+        value={audioUrl}
+        onChange={(event) => setAudioUrl(event.target.value)}
+      />
 
       <fieldset className={styles.tagFieldset}>
         <legend>Tags</legend>

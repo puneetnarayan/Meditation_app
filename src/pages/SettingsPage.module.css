@@ -37,7 +37,7 @@
   background: var(--color-primary-hover);
 }
 
-.adminLink {
+.secondaryLink {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
@@ -50,6 +50,6 @@
   font-weight: 500;
 }
 
-.adminLink:hover {
+.secondaryLink:hover {
   border-color: var(--color-text-muted);
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Meditation } from '../../types'
 import { useMeditationTimer } from '../../hooks/useMeditationTimer'
 import { useAudioEngine } from '../../hooks/useAudioEngine'
+import { resolvePlaybackUrl } from '../../services/offline/offlineAudioStore'
 import { recordSession } from '../../services/progress/sessionStore'
 import { getPreferences } from '../../services/preferences/preferencesStore'
 import { recordPlayed } from '../../services/recentlyPlayed/recentlyPlayedStore'
@@ -52,8 +53,28 @@ export function MeditationPlayer({
   const [initialVolume] = useState(() => getPreferences().audioVolume)
   const audio = useAudioEngine({ initialVolume })
 
+  // Tracks a blob URL created from a cached offline download, if any,
+  // so it can be revoked once the player no longer needs it — blob
+  // URLs otherwise leak for the page's lifetime.
+  const objectUrlRef = useRef<string | undefined>(undefined)
+
   useEffect(() => {
-    if (audioUrl) audio.load(audioUrl)
+    if (!audioUrl) return
+    let cancelled = false
+
+    resolvePlaybackUrl(meditation).then((resolvedUrl) => {
+      if (cancelled || !resolvedUrl) return
+      if (resolvedUrl.startsWith('blob:')) objectUrlRef.current = resolvedUrl
+      audio.load(resolvedUrl)
+    })
+
+    return () => {
+      cancelled = true
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current)
+        objectUrlRef.current = undefined
+      }
+    }
     // Only (re)load when the audio source itself changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audioUrl])
@@ -108,7 +129,12 @@ export function MeditationPlayer({
   }
 
   function handleRetryAudio() {
-    if (audioUrl) audio.load(audioUrl)
+    if (!audioUrl) return
+    resolvePlaybackUrl(meditation).then((resolvedUrl) => {
+      if (!resolvedUrl) return
+      if (resolvedUrl.startsWith('blob:')) objectUrlRef.current = resolvedUrl
+      audio.load(resolvedUrl)
+    })
   }
 
   return (

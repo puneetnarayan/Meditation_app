@@ -13,6 +13,7 @@ export interface MeditationOverride {
   type?: MeditationType
   difficulty?: MeditationDifficulty
   tags?: MeditationTag[]
+  audioUrl?: string
   isPremium?: boolean
   isFeatured?: boolean
 }
@@ -26,6 +27,7 @@ export interface NewMeditationInput {
   type: MeditationType
   difficulty: MeditationDifficulty
   tags: MeditationTag[]
+  audioUrl?: string
   isPremium: boolean
   isFeatured: boolean
 }

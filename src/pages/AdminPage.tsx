@@ -188,6 +188,7 @@ export function AdminPage() {
               type: editingRow.type,
               difficulty: editingRow.difficulty,
               tags: editingRow.tags,
+              audioUrl: editingRow.audioUrl,
               isPremium: editingRow.isPremium,
               isFeatured: editingRow.isFeatured,
             }}

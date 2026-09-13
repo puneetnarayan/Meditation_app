@@ -26,6 +26,10 @@ describe('MeditationForm', () => {
     await user.type(screen.getByLabelText('Duration (minutes)'), '5')
     await user.click(screen.getByLabelText('Quick reset'))
     await user.click(screen.getByLabelText('Featured'))
+    await user.type(
+      screen.getByLabelText('Audio URL (optional)'),
+      'https://example.com/audio/lunch-reset.mp3',
+    )
 
     await user.click(screen.getByRole('button', { name: 'Add meditation' }))
 
@@ -37,6 +41,29 @@ describe('MeditationForm', () => {
     expect(submitted.tags).toEqual(['quick-reset'])
     expect(submitted.isFeatured).toBe(true)
     expect(submitted.isPremium).toBe(false)
+    expect(submitted.audioUrl).toBe('https://example.com/audio/lunch-reset.mp3')
+  })
+
+  it('omits audioUrl when the field is left blank', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    render(
+      <MeditationForm
+        submitLabel="Add meditation"
+        onSubmit={onSubmit}
+        onCancel={vi.fn()}
+      />,
+    )
+
+    await user.type(screen.getByLabelText('Title'), 'Lunch Reset')
+    await user.type(
+      screen.getByLabelText('Description'),
+      'A short reset for the middle of the day.',
+    )
+    await user.click(screen.getByRole('button', { name: 'Add meditation' }))
+
+    const submitted = onSubmit.mock.calls[0][0] as NewMeditationInput
+    expect(submitted.audioUrl).toBeUndefined()
   })
 
   it('does not submit without a title or description', async () => {
@@ -66,6 +93,7 @@ describe('MeditationForm', () => {
           type: 'guided',
           difficulty: 'beginner',
           tags: ['morning-routine'],
+          audioUrl: 'https://example.com/audio/morning-calm.mp3',
           isPremium: false,
           isFeatured: true,
         }}
@@ -79,6 +107,9 @@ describe('MeditationForm', () => {
     expect(screen.getByLabelText('Duration (minutes)')).toHaveValue(10)
     expect(screen.getByLabelText('Featured')).toBeChecked()
     expect(screen.getByLabelText('Morning routine')).toBeChecked()
+    expect(screen.getByLabelText('Audio URL (optional)')).toHaveValue(
+      'https://example.com/audio/morning-calm.mp3',
+    )
   })
 
   it('calls onCancel when Cancel is clicked', async () => {

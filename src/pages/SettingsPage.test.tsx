@@ -74,4 +74,13 @@ describe('SettingsPage', () => {
       screen.getByRole('link', { name: 'Content management' }),
     ).toHaveAttribute('href', '/admin')
   })
+
+  it('links to the downloads management page', () => {
+    renderSettings()
+
+    expect(screen.getByRole('link', { name: 'Downloads' })).toHaveAttribute(
+      'href',
+      '/downloads',
+    )
+  })
 })

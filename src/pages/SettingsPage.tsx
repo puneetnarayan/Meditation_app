@@ -78,11 +78,21 @@ export function SettingsPage() {
       <RemindersSection />
 
       <section className={styles.section}>
+        <h2>Offline</h2>
+        <p className={styles.sectionDescription}>
+          Manage meditations you've downloaded for offline listening.
+        </p>
+        <Link to="/downloads" className={styles.secondaryLink}>
+          Downloads
+        </Link>
+      </section>
+
+      <section className={styles.section}>
         <h2>Advanced</h2>
         <p className={styles.sectionDescription}>
           Internal tool for managing the meditation catalog.
         </p>
-        <Link to="/admin" className={styles.adminLink}>
+        <Link to="/admin" className={styles.secondaryLink}>
           Content management
         </Link>
       </section>

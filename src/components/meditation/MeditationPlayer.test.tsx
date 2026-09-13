@@ -2,8 +2,39 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Meditation } from '../../types'
 import { getSessions } from '../../services/progress/sessionStore'
+import { downloadMeditationAudio } from '../../services/offline/offlineAudioStore'
 import { getRecentlyPlayed } from '../../services/recentlyPlayed/recentlyPlayedStore'
 import { MeditationPlayer } from './MeditationPlayer'
+
+class MockCache {
+  private store = new Map<string, Response>()
+  async put(request: string, response: Response) {
+    this.store.set(request, response)
+  }
+  async match(request: string) {
+    return this.store.get(request)
+  }
+  async delete(request: string) {
+    return this.store.delete(request)
+  }
+}
+
+class MockCacheStorage {
+  private named = new Map<string, MockCache>()
+  async open(name: string) {
+    if (!this.named.has(name)) this.named.set(name, new MockCache())
+    return this.named.get(name)!
+  }
+  async match(request: string, options?: { cacheName?: string }) {
+    if (options?.cacheName)
+      return this.named.get(options.cacheName)?.match(request)
+    for (const cache of this.named.values()) {
+      const result = await cache.match(request)
+      if (result) return result
+    }
+    return undefined
+  }
+}
 
 const fixture: Meditation = {
   id: 'med-test',
@@ -26,6 +57,7 @@ describe('MeditationPlayer', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.unstubAllGlobals()
     window.localStorage.clear()
   })
 
@@ -202,5 +234,48 @@ describe('MeditationPlayer', () => {
       vi.advanceTimersByTime(10_000)
     })
     expect(onComplete).toHaveBeenCalledTimes(1)
+  })
+
+  it('loads a cached blob URL instead of the network URL once the meditation is downloaded', async () => {
+    vi.stubGlobal('caches', new MockCacheStorage())
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(new Response('audio-bytes', { status: 200 })),
+      ),
+    )
+    const audioFixture: Meditation = {
+      ...fixture,
+      audioUrl: 'https://example.com/audio/fixture.mp3',
+    }
+    await downloadMeditationAudio(audioFixture)
+
+    const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL')
+    render(<MeditationPlayer meditation={audioFixture} />)
+
+    await act(async () => {
+      await Promise.resolve()
+      await Promise.resolve()
+    })
+
+    expect(createObjectURLSpy).toHaveBeenCalled()
+  })
+
+  it('does not create a blob URL when the meditation has not been downloaded', async () => {
+    vi.stubGlobal('caches', new MockCacheStorage())
+    const audioFixture: Meditation = {
+      ...fixture,
+      audioUrl: 'https://example.com/audio/fixture.mp3',
+    }
+
+    const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL')
+    render(<MeditationPlayer meditation={audioFixture} />)
+
+    await act(async () => {
+      await Promise.resolve()
+      await Promise.resolve()
+    })
+
+    expect(createObjectURLSpy).not.toHaveBeenCalled()
   })
 })
