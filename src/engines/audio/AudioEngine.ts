@@ -18,6 +18,7 @@ export interface AudioElementLike {
   currentTime: number
   duration: number
   volume: number
+  loop: boolean
   play: () => Promise<void>
   pause: () => void
   load: () => void
@@ -32,6 +33,10 @@ export interface AudioEngineOptions {
    * `() => new Audio()`. */
   createElement?: () => AudioElementLike
   initialVolume?: number
+  /** For continuous ambient sound (e.g. rain, ocean) rather than a
+   * guided session — a looping element never fires `ended`, so
+   * `onComplete`/the `completed` status are simply never reached. */
+  loop?: boolean
 }
 
 const GENERIC_ERROR_MESSAGE = 'This audio could not be played.'
@@ -58,6 +63,7 @@ export class AudioEngine {
   private currentTime = 0
   private duration = 0
   private volume: number
+  private readonly loop: boolean
   private errorMessage: string | null = null
   private currentSrc: string | null = null
 
@@ -65,6 +71,7 @@ export class AudioEngine {
     this.onStateChange = options.onStateChange
     this.onComplete = options.onComplete
     this.volume = clamp(options.initialVolume ?? 1, 0, 1)
+    this.loop = options.loop ?? false
     this.createElementFn = options.createElement ?? (() => new Audio())
   }
 
@@ -73,6 +80,7 @@ export class AudioEngine {
 
     const element = this.createElementFn()
     element.volume = this.volume
+    element.loop = this.loop
     element.addEventListener('loadedmetadata', this.handleLoadedMetadata)
     element.addEventListener('canplay', this.handleCanPlay)
     element.addEventListener('timeupdate', this.handleTimeUpdate)

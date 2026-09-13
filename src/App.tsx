@@ -10,6 +10,7 @@ const MeditationDetailsPage = lazy(
 )
 const ProgressPage = lazy(() => import('./pages/ProgressPage'))
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage'))
+const SoundsPage = lazy(() => import('./pages/SoundsPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const PlayerPage = lazy(() => import('./pages/PlayerPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
@@ -34,6 +35,7 @@ function App() {
             <Route path="meditation/:id" element={<MeditationDetailsPage />} />
             <Route path="progress" element={<ProgressPage />} />
             <Route path="favorites" element={<FavoritesPage />} />
+            <Route path="sounds" element={<SoundsPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="player/:id" element={<PlayerPage />} />
             <Route path="*" element={<NotFoundPage />} />

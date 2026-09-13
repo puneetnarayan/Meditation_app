@@ -1,0 +1,5 @@
+.soundsLink {
+  display: inline-block;
+  margin-bottom: var(--space-lg);
+  font-size: var(--font-size-sm);
+}

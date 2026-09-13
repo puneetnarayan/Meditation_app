@@ -8,6 +8,7 @@ class FakeAudioElement implements AudioElementLike {
   currentTime = 0
   duration = 120
   volume = 1
+  loop = false
   play = vi.fn(() => Promise.resolve())
   pause = vi.fn()
   load = vi.fn()

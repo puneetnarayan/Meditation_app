@@ -7,6 +7,7 @@ class FakeAudioElement implements AudioElementLike {
   currentTime = 0
   duration = NaN
   volume = 1
+  loop = false
   play = vi.fn(() => Promise.resolve())
   pause = vi.fn()
   load = vi.fn()
@@ -65,6 +66,30 @@ describe('AudioEngine', () => {
     engine.load('/audio/track.mp3')
 
     expect(element.volume).toBe(0.4)
+  })
+
+  it('does not loop by default', () => {
+    const { engine, element } = setup()
+    engine.load('/audio/track.mp3')
+    expect(element.loop).toBe(false)
+  })
+
+  it('sets the element to loop for continuous ambient sound', () => {
+    const { engine, element } = setup({ loop: true })
+    engine.load('/audio/track.mp3')
+    expect(element.loop).toBe(true)
+  })
+
+  it('never reaches completed for a looping element, since ended never fires', () => {
+    const { engine, element, onComplete } = setup({ loop: true })
+    engine.load('/audio/track.mp3')
+    element.duration = 60
+    element.dispatch('loadedmetadata')
+
+    // A real looping <audio> element never fires 'ended'; nothing here
+    // should call onComplete on its own.
+    expect(onComplete).not.toHaveBeenCalled()
+    expect(engine.getState().status).toBe('ready')
   })
 
   it('transitions idle -> loading -> ready on load and loadedmetadata', () => {
