@@ -17,6 +17,7 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const OnboardingPage = lazy(() => import('./pages/OnboardingPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const DownloadsPage = lazy(() => import('./pages/DownloadsPage'))
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const PlayerPage = lazy(() => import('./pages/PlayerPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
@@ -47,6 +48,7 @@ function App() {
             <Route path="onboarding" element={<OnboardingPage />} />
             <Route path="admin" element={<AdminPage />} />
             <Route path="downloads" element={<DownloadsPage />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
             <Route path="player/:id" element={<PlayerPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

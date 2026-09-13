@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { trackEvent } from '../services/analytics/analyticsStore'
 import {
   getFavoriteIds,
   toggleFavorite as persistToggleFavorite,
@@ -24,7 +25,11 @@ export function useFavorites(): UseFavoritesResult {
   }
 
   function toggleFavorite(meditationId: string): void {
+    const wasFavorite = favoriteIds.includes(meditationId)
     setFavoriteIds(persistToggleFavorite(meditationId))
+    if (!wasFavorite) {
+      trackEvent('favorite_added', { meditationId })
+    }
   }
 
   return { favoriteIds, isFavorite, toggleFavorite }

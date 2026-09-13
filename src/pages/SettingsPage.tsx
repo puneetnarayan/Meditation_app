@@ -95,6 +95,12 @@ export function SettingsPage() {
         <Link to="/admin" className={styles.secondaryLink}>
           Content management
         </Link>
+        <p className={styles.sectionDescription}>
+          Local, private counts of how the app is used.
+        </p>
+        <Link to="/analytics" className={styles.secondaryLink}>
+          Analytics
+        </Link>
       </section>
     </PageContainer>
   )

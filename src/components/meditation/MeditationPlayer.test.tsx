@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Meditation } from '../../types'
+import { getEvents } from '../../services/analytics/analyticsStore'
 import { getSessions } from '../../services/progress/sessionStore'
 import { downloadMeditationAudio } from '../../services/offline/offlineAudioStore'
 import { getRecentlyPlayed } from '../../services/recentlyPlayed/recentlyPlayedStore'
@@ -216,6 +217,27 @@ describe('MeditationPlayer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
 
     expect(getRecentlyPlayed()).toHaveLength(1)
+  })
+
+  it('tracks meditation_started once, meditation_paused on pause, and meditation_completed on natural finish, and calls onStart only on a fresh start', () => {
+    const onStart = vi.fn()
+    render(<MeditationPlayer meditation={fixture} onStart={onStart} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Pause' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Play' })) // resume
+    expect(onStart).toHaveBeenCalledTimes(1)
+
+    act(() => {
+      vi.advanceTimersByTime(10_000)
+    })
+
+    const names = getEvents().map((event) => event.name)
+    expect(names).toEqual([
+      'meditation_started',
+      'meditation_paused',
+      'meditation_completed',
+    ])
   })
 
   it('calls onComplete when the session finishes naturally, but not on manual End', () => {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   MEDITATION_DIFFICULTIES,
   MEDITATION_TYPES,
@@ -9,6 +9,7 @@ import {
 import { categories } from '../../data/categories'
 import { instructors } from '../../data/instructors'
 import { useFavorites } from '../../hooks/useFavorites'
+import { trackEvent } from '../../services/analytics/analyticsStore'
 import { getAllMeditations } from '../../services/content/contentStore'
 import {
   queryMeditations,
@@ -51,6 +52,20 @@ export function LibraryBrowser({ category }: LibraryBrowserProps) {
   })
 
   const hasActiveFilters = Boolean(search || difficulty || type)
+
+  // Tracked on a short pause in typing, not per keystroke, and by
+  // length only — never the query text itself, per the "avoid
+  // unnecessary personal information" rule for analytics.
+  useEffect(() => {
+    const query = search.trim()
+    if (!query) return
+
+    const timeoutId = window.setTimeout(() => {
+      trackEvent('search_performed', { queryLength: query.length })
+    }, 500)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [search])
 
   function handleClearFilters() {
     setSearch('')

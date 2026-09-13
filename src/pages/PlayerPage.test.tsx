@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { getEvents } from '../services/analytics/analyticsStore'
 import { getCompletedDays } from '../services/programs/programProgressStore'
 import { PlayerPage } from './PlayerPage'
 
@@ -54,6 +55,31 @@ describe('PlayerPage', () => {
     })
 
     expect(getCompletedDays('program-7-days-of-calm')).toEqual([])
+  })
+
+  it('tracks program_started when playback begins in a program context, but not for a plain session', () => {
+    renderPlayer(
+      '/player/med-box-breathing-primer?programId=program-7-days-of-calm&day=3',
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+
+    const programEvents = getEvents().filter(
+      (event) => event.name === 'program_started',
+    )
+    expect(programEvents).toHaveLength(1)
+    expect(programEvents[0].properties).toEqual({
+      programId: 'program-7-days-of-calm',
+      day: 3,
+    })
+  })
+
+  it('does not track program_started for a plain (non-program) session', () => {
+    renderPlayer('/player/med-box-breathing-primer')
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+
+    expect(
+      getEvents().filter((event) => event.name === 'program_started'),
+    ).toHaveLength(0)
   })
 
   it('does not mark the day completed on manual End before finishing', () => {

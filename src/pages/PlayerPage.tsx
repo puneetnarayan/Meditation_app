@@ -1,6 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { PageContainer } from '../components/common/PageContainer'
 import { MeditationPlayer } from '../components/meditation/MeditationPlayer'
+import { trackEvent } from '../services/analytics/analyticsStore'
 import { getAllMeditations } from '../services/content/contentStore'
 import { markDayCompleted } from '../services/programs/programProgressStore'
 import { getMeditationById } from '../utils/meditationQueries'
@@ -35,6 +36,11 @@ export function PlayerPage() {
       <MeditationPlayer
         meditation={meditation}
         onExit={() => navigate(exitTo)}
+        onStart={() => {
+          if (hasProgramContext && programId) {
+            trackEvent('program_started', { programId, day: dayNumber })
+          }
+        }}
         onComplete={() => {
           if (hasProgramContext && programId) {
             markDayCompleted(programId, dayNumber)

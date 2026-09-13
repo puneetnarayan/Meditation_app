@@ -83,4 +83,13 @@ describe('SettingsPage', () => {
       '/downloads',
     )
   })
+
+  it('links to the analytics page', () => {
+    renderSettings()
+
+    expect(screen.getByRole('link', { name: 'Analytics' })).toHaveAttribute(
+      'href',
+      '/analytics',
+    )
+  })
 })

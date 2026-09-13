@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { categories } from '../../data/categories'
+import { getEvents } from '../../services/analytics/analyticsStore'
 import { LibraryBrowser } from './LibraryBrowser'
 
 function renderBrowser(categorySlug?: string) {
@@ -79,5 +80,43 @@ describe('LibraryBrowser', () => {
     expect(
       screen.getAllByRole('button', { name: 'Remove from favorites' }),
     ).toHaveLength(1)
+  })
+
+  it('tracks favorite_added only when a meditation is favorited, not un-favorited', async () => {
+    const user = userEvent.setup()
+    renderBrowser()
+
+    const toggle = screen.getAllByRole('button', {
+      name: 'Add to favorites',
+    })[0]
+    await user.click(toggle)
+    await user.click(
+      screen.getAllByRole('button', {
+        name: 'Remove from favorites',
+      })[0],
+    )
+
+    const favoriteEvents = getEvents().filter(
+      (event) => event.name === 'favorite_added',
+    )
+    expect(favoriteEvents).toHaveLength(1)
+  })
+
+  it('tracks search_performed once, by query length, after a pause in typing', () => {
+    vi.useFakeTimers()
+    renderBrowser()
+
+    fireEvent.change(screen.getByLabelText('Search'), {
+      target: { value: 'anxiety' },
+    })
+    vi.advanceTimersByTime(500)
+
+    const searchEvents = getEvents().filter(
+      (event) => event.name === 'search_performed',
+    )
+    expect(searchEvents).toHaveLength(1)
+    expect(searchEvents[0].properties).toEqual({ queryLength: 7 })
+
+    vi.useRealTimers()
   })
 })

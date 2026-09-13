@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Meditation } from '../../types'
 import { useMeditationTimer } from '../../hooks/useMeditationTimer'
 import { useAudioEngine } from '../../hooks/useAudioEngine'
+import { trackEvent } from '../../services/analytics/analyticsStore'
 import { resolvePlaybackUrl } from '../../services/offline/offlineAudioStore'
 import { recordSession } from '../../services/progress/sessionStore'
 import { getPreferences } from '../../services/preferences/preferencesStore'
@@ -20,12 +21,17 @@ export interface MeditationPlayerProps {
   /** Called once the session finishes naturally (the full duration
    * elapsed) — distinct from onExit, which only fires on manual End. */
   onComplete?: () => void
+  /** Called when a fresh session begins (not on resume from pause) —
+   * lets a caller with extra context (e.g. PlayerPage knowing this is
+   * a program day) react to the exact moment playback starts. */
+  onStart?: () => void
 }
 
 export function MeditationPlayer({
   meditation,
   onExit,
   onComplete,
+  onStart,
 }: MeditationPlayerProps) {
   const { audioUrl } = meditation
 
@@ -46,6 +52,7 @@ export function MeditationPlayer({
         })
         startedAtRef.current = null
       }
+      trackEvent('meditation_completed', { meditationId: meditation.id })
       onComplete?.()
     },
   })
@@ -88,6 +95,7 @@ export function MeditationPlayer({
     if (isRunning) {
       timer.pause()
       if (audioUrl) audio.pause()
+      trackEvent('meditation_paused', { meditationId: meditation.id })
       return
     }
 
@@ -96,6 +104,8 @@ export function MeditationPlayer({
     } else {
       startedAtRef.current = new Date()
       recordPlayed(meditation.id)
+      trackEvent('meditation_started', { meditationId: meditation.id })
+      onStart?.()
       timer.start()
     }
     if (audioUrl) audio.play()
