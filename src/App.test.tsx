@@ -33,4 +33,36 @@ describe('App shell routing', () => {
       await screen.findByRole('heading', { name: 'Page not found' }),
     ).toBeInTheDocument()
   })
+
+  it('browses the library, opens a meditation, and starts the player', async () => {
+    const user = userEvent.setup()
+    window.history.pushState({}, '', '/library')
+    render(<App />)
+
+    await user.type(await screen.findByLabelText('Search'), 'Morning Calm')
+    await user.click(await screen.findByRole('link', { name: /Morning Calm/ }))
+
+    const startButton = await screen.findByRole('button', {
+      name: 'Start meditation',
+    })
+    expect(window.location.pathname).toBe('/meditation/med-morning-calm')
+
+    await user.click(startButton)
+
+    expect(
+      await screen.findByRole('button', { name: 'Play' }),
+    ).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/player/med-morning-calm')
+  })
+
+  it('shows a category page scoped to that category', async () => {
+    window.history.pushState({}, '', '/library/anxiety')
+    render(<App />)
+
+    expect(
+      await screen.findByRole('heading', { name: 'Anxiety' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Releasing Anxiety')).toBeInTheDocument()
+    expect(screen.queryByText('Morning Calm')).not.toBeInTheDocument()
+  })
 })
