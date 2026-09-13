@@ -1,10 +1,12 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../components/common/Button'
 import { EmptyState } from '../components/common/EmptyState'
+import { IconButton } from '../components/common/IconButton'
 import { PageContainer } from '../components/common/PageContainer'
 import { categories } from '../data/categories'
 import { instructors } from '../data/instructors'
 import { meditations } from '../data/meditations'
+import { useFavorites } from '../hooks/useFavorites'
 import { getMeditationById } from '../utils/meditationQueries'
 import { formatSecondsAsClock } from '../utils/time'
 import { toTitleCase } from '../utils/text'
@@ -14,6 +16,7 @@ export function MeditationDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const meditation = id ? getMeditationById(meditations, id) : undefined
+  const { isFavorite, toggleFavorite } = useFavorites()
 
   if (!meditation) {
     return (
@@ -35,7 +38,19 @@ export function MeditationDetailsPage() {
     <PageContainer>
       <article className={styles.details}>
         {category && <p className={styles.eyebrow}>{category.name}</p>}
-        <h1>{meditation.title}</h1>
+        <div className={styles.titleRow}>
+          <h1>{meditation.title}</h1>
+          <IconButton
+            icon={isFavorite(meditation.id) ? '★' : '☆'}
+            label={
+              isFavorite(meditation.id)
+                ? 'Remove from favorites'
+                : 'Add to favorites'
+            }
+            aria-pressed={isFavorite(meditation.id)}
+            onClick={() => toggleFavorite(meditation.id)}
+          />
+        </div>
         <p className={styles.meta}>
           {formatSecondsAsClock(meditation.durationSeconds)} ·{' '}
           {toTitleCase(meditation.type)} · {toTitleCase(meditation.difficulty)}

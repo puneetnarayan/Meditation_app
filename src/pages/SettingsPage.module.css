@@ -1,0 +1,15 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-width: 420px;
+  margin-top: var(--space-xl);
+}
+
+.section:first-of-type {
+  margin-top: var(--space-lg);
+}
+
+.section h2 {
+  margin: 0;
+}

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import type { Category, Instructor, Meditation } from '../../types'
 import { MeditationCard } from './MeditationCard'
@@ -57,5 +58,50 @@ describe('MeditationCard', () => {
     )
 
     expect(screen.getByText('Test Meditation')).toBeInTheDocument()
+  })
+
+  it('hides the favorite toggle when onToggleFavorite is omitted', () => {
+    render(
+      <MemoryRouter>
+        <MeditationCard meditation={meditation} />
+      </MemoryRouter>,
+    )
+
+    expect(
+      screen.queryByRole('button', { name: /favorites/ }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows an unpressed favorite toggle by default', () => {
+    render(
+      <MemoryRouter>
+        <MeditationCard meditation={meditation} onToggleFavorite={vi.fn()} />
+      </MemoryRouter>,
+    )
+
+    const toggle = screen.getByRole('button', { name: 'Add to favorites' })
+    expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('shows a pressed favorite toggle and calls the handler on click', async () => {
+    const user = userEvent.setup()
+    const onToggleFavorite = vi.fn()
+    render(
+      <MemoryRouter>
+        <MeditationCard
+          meditation={meditation}
+          isFavorite
+          onToggleFavorite={onToggleFavorite}
+        />
+      </MemoryRouter>,
+    )
+
+    const toggle = screen.getByRole('button', {
+      name: 'Remove from favorites',
+    })
+    expect(toggle).toHaveAttribute('aria-pressed', 'true')
+
+    await user.click(toggle)
+    expect(onToggleFavorite).toHaveBeenCalledTimes(1)
   })
 })

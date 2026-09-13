@@ -1,10 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Meditation } from '../../types'
-import {
-  clearSessions,
-  getSessions,
-} from '../../services/progress/sessionStore'
+import { getSessions } from '../../services/progress/sessionStore'
+import { getRecentlyPlayed } from '../../services/recentlyPlayed/recentlyPlayedStore'
 import { MeditationPlayer } from './MeditationPlayer'
 
 const fixture: Meditation = {
@@ -23,12 +21,12 @@ const fixture: Meditation = {
 describe('MeditationPlayer', () => {
   beforeEach(() => {
     vi.useFakeTimers()
-    clearSessions()
+    window.localStorage.clear()
   })
 
   afterEach(() => {
     vi.useRealTimers()
-    clearSessions()
+    window.localStorage.clear()
   })
 
   it('renders the meditation title, description and initial duration', () => {
@@ -164,5 +162,27 @@ describe('MeditationPlayer', () => {
     fireEvent.click(screen.getByRole('button', { name: 'End' }))
 
     expect(getSessions()).toHaveLength(0)
+  })
+
+  it('records the meditation as recently played on first play', () => {
+    render(<MeditationPlayer meditation={fixture} />)
+
+    expect(getRecentlyPlayed()).toHaveLength(0)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+
+    const recentlyPlayed = getRecentlyPlayed()
+    expect(recentlyPlayed).toHaveLength(1)
+    expect(recentlyPlayed[0].meditationId).toBe('med-test')
+  })
+
+  it('does not duplicate the recently-played entry on pause/resume', () => {
+    render(<MeditationPlayer meditation={fixture} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Pause' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+
+    expect(getRecentlyPlayed()).toHaveLength(1)
   })
 })

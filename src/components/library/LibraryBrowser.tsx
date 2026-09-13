@@ -9,6 +9,7 @@ import {
 import { categories } from '../../data/categories'
 import { instructors } from '../../data/instructors'
 import { meditations } from '../../data/meditations'
+import { useFavorites } from '../../hooks/useFavorites'
 import {
   queryMeditations,
   type MeditationSortBy,
@@ -39,6 +40,7 @@ export function LibraryBrowser({ category }: LibraryBrowserProps) {
   const [difficulty, setDifficulty] = useState<MeditationDifficulty | ''>('')
   const [type, setType] = useState<MeditationType | ''>('')
   const [sortBy, setSortBy] = useState<MeditationSortBy>('title')
+  const { isFavorite, toggleFavorite } = useFavorites()
 
   const results = queryMeditations(meditations, {
     categoryId: category?.id,
@@ -135,6 +137,8 @@ export function LibraryBrowser({ category }: LibraryBrowserProps) {
                     ? instructorById.get(meditation.instructorId)
                     : undefined
                 }
+                isFavorite={isFavorite(meditation.id)}
+                onToggleFavorite={() => toggleFavorite(meditation.id)}
               />
             </li>
           ))}

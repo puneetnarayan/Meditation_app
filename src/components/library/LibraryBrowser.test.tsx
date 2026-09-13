@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { categories } from '../../data/categories'
 import { LibraryBrowser } from './LibraryBrowser'
@@ -18,6 +18,9 @@ function renderBrowser(categorySlug?: string) {
 }
 
 describe('LibraryBrowser', () => {
+  beforeEach(() => window.localStorage.clear())
+  afterEach(() => window.localStorage.clear())
+
   it('lists every mock meditation by default', () => {
     renderBrowser()
     expect(screen.getAllByRole('link').length).toBeGreaterThan(1)
@@ -62,5 +65,19 @@ describe('LibraryBrowser', () => {
 
     expect(screen.getByText('Releasing Anxiety')).toBeInTheDocument()
     expect(screen.queryByText('Morning Calm')).not.toBeInTheDocument()
+  })
+
+  it('toggles a meditation as favorite', async () => {
+    const user = userEvent.setup()
+    renderBrowser()
+
+    const toggle = screen.getAllByRole('button', {
+      name: 'Add to favorites',
+    })[0]
+    await user.click(toggle)
+
+    expect(
+      screen.getAllByRole('button', { name: 'Remove from favorites' }),
+    ).toHaveLength(1)
   })
 })

@@ -1,8 +1,10 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Meditation } from '../../types'
 import { useMeditationTimer } from '../../hooks/useMeditationTimer'
 import { useAudioEngine } from '../../hooks/useAudioEngine'
 import { recordSession } from '../../services/progress/sessionStore'
+import { getPreferences } from '../../services/preferences/preferencesStore'
+import { recordPlayed } from '../../services/recentlyPlayed/recentlyPlayedStore'
 import { formatSecondsAsClock } from '../../utils/time'
 import { toTitleCase } from '../../utils/text'
 import { Button } from '../common/Button'
@@ -42,7 +44,8 @@ export function MeditationPlayer({
     },
   })
 
-  const audio = useAudioEngine()
+  const [initialVolume] = useState(() => getPreferences().audioVolume)
+  const audio = useAudioEngine({ initialVolume })
 
   useEffect(() => {
     if (audioUrl) audio.load(audioUrl)
@@ -66,6 +69,7 @@ export function MeditationPlayer({
       timer.resume()
     } else {
       startedAtRef.current = new Date()
+      recordPlayed(meditation.id)
       timer.start()
     }
     if (audioUrl) audio.play()

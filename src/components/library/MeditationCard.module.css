@@ -1,25 +1,46 @@
-.link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-  border-radius: var(--radius-lg);
-}
-
-.link:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-focus-ring);
-  outline-offset: 2px;
-}
-
 .card {
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
 }
 
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
 .title {
   margin: 0;
   font-size: var(--font-size-md);
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Stretches the link over the entire card so the whole surface is
+ * clickable, without nesting the favorite button (a separate button)
+ * inside this anchor. */
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.link:focus-visible::after {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: -2px;
+}
+
+.favoriteButton {
+  position: relative;
+  z-index: 1;
+  flex: none;
 }
 
 .description {
