@@ -20,8 +20,12 @@
   --color-text: #2b2621;
   --color-text-muted: #6b6259;
   --color-border: #e6e0d8;
-  --color-primary: #6a8a7a;
-  --color-primary-hover: #597667;
+  /* Darker than it may look needed — #6a8a7a (a lighter sage that reads
+     fine as a background) fails WCAG AA (3.6:1) when used as text or as
+     a button background under white text. This shade holds ~4.7-5:1
+     against both --color-bg and white. */
+  --color-primary: #597667;
+  --color-primary-hover: #486254;
   --color-primary-contrast: #ffffff;
   --color-accent: #c98a5e;
   --color-danger: #b3564a;
@@ -137,8 +141,8 @@
   --color-text: #2b2621;
   --color-text-muted: #6b6259;
   --color-border: #e6e0d8;
-  --color-primary: #6a8a7a;
-  --color-primary-hover: #597667;
+  --color-primary: #597667;
+  --color-primary-hover: #486254;
   --color-primary-contrast: #ffffff;
   --color-accent: #c98a5e;
   --color-danger: #b3564a;
