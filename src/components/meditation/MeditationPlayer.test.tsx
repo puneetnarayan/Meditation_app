@@ -185,4 +185,22 @@ describe('MeditationPlayer', () => {
 
     expect(getRecentlyPlayed()).toHaveLength(1)
   })
+
+  it('calls onComplete when the session finishes naturally, but not on manual End', () => {
+    const onComplete = vi.fn()
+    render(<MeditationPlayer meditation={fixture} onComplete={onComplete} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    act(() => {
+      vi.advanceTimersByTime(3000)
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'End' }))
+    expect(onComplete).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    act(() => {
+      vi.advanceTimersByTime(10_000)
+    })
+    expect(onComplete).toHaveBeenCalledTimes(1)
+  })
 })

@@ -7,9 +7,10 @@ export function LibraryPage() {
   return (
     <PageContainer>
       <h1>Library</h1>
-      <Link to="/sounds" className={styles.soundsLink}>
-        Looking for ambient sounds instead? →
-      </Link>
+      <nav className={styles.exploreLinks} aria-label="Other ways to explore">
+        <Link to="/sounds">Ambient sounds →</Link>
+        <Link to="/programs">Multi-day programs →</Link>
+      </nav>
       <LibraryBrowser />
     </PageContainer>
   )

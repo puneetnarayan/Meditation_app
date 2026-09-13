@@ -16,11 +16,15 @@ export interface MeditationPlayerProps {
   meditation: Meditation
   /** Called after the user ends the session (via the End control). */
   onExit?: () => void
+  /** Called once the session finishes naturally (the full duration
+   * elapsed) — distinct from onExit, which only fires on manual End. */
+  onComplete?: () => void
 }
 
 export function MeditationPlayer({
   meditation,
   onExit,
+  onComplete,
 }: MeditationPlayerProps) {
   const { audioUrl } = meditation
 
@@ -41,6 +45,7 @@ export function MeditationPlayer({
         })
         startedAtRef.current = null
       }
+      onComplete?.()
     },
   })
 
