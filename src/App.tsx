@@ -6,6 +6,7 @@ const HomePage = lazy(() => import('./pages/HomePage'))
 const LibraryPage = lazy(() => import('./pages/LibraryPage'))
 const ProgressPage = lazy(() => import('./pages/ProgressPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const PlayerPage = lazy(() => import('./pages/PlayerPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function RouteLoadingFallback() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="library" element={<LibraryPage />} />
             <Route path="progress" element={<ProgressPage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="player/:id" element={<PlayerPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

@@ -46,9 +46,13 @@ const GENERIC_ERROR_MESSAGE = 'This audio could not be played.'
  * into `<audio>` elements directly.
  */
 export class AudioEngine {
-  private readonly element: AudioElementLike
-  private readonly onStateChange?: (state: AudioEngineState) => void
-  private readonly onComplete?: (state: AudioEngineState) => void
+  private readonly createElementFn: () => AudioElementLike
+  private onStateChange?: (state: AudioEngineState) => void
+  private onComplete?: (state: AudioEngineState) => void
+
+  /** Created lazily on first `load()` — a meditation with no audio
+   * should never have to pay for (or produce) a real media element. */
+  private element: AudioElementLike | null = null
 
   private status: AudioEngineStatus = 'idle'
   private currentTime = 0
@@ -61,15 +65,34 @@ export class AudioEngine {
     this.onStateChange = options.onStateChange
     this.onComplete = options.onComplete
     this.volume = clamp(options.initialVolume ?? 1, 0, 1)
+    this.createElementFn = options.createElement ?? (() => new Audio())
+  }
 
-    this.element = (options.createElement ?? (() => new Audio()))()
-    this.element.volume = this.volume
+  private ensureElement(): AudioElementLike {
+    if (this.element) return this.element
 
-    this.element.addEventListener('loadedmetadata', this.handleLoadedMetadata)
-    this.element.addEventListener('canplay', this.handleCanPlay)
-    this.element.addEventListener('timeupdate', this.handleTimeUpdate)
-    this.element.addEventListener('ended', this.handleEnded)
-    this.element.addEventListener('error', this.handleError)
+    const element = this.createElementFn()
+    element.volume = this.volume
+    element.addEventListener('loadedmetadata', this.handleLoadedMetadata)
+    element.addEventListener('canplay', this.handleCanPlay)
+    element.addEventListener('timeupdate', this.handleTimeUpdate)
+    element.addEventListener('ended', this.handleEnded)
+    element.addEventListener('error', this.handleError)
+    this.element = element
+    return element
+  }
+
+  /** Updates the state-change/completion callbacks in place, e.g. so a
+   * React binding can keep them pointing at the latest render's closures
+   * without recreating the engine. Omitted keys are left unchanged. */
+  setCallbacks(callbacks: {
+    onStateChange?: (state: AudioEngineState) => void
+    onComplete?: (state: AudioEngineState) => void
+  }): void {
+    if ('onStateChange' in callbacks) {
+      this.onStateChange = callbacks.onStateChange
+    }
+    if ('onComplete' in callbacks) this.onComplete = callbacks.onComplete
   }
 
   getState(): AudioEngineState {
@@ -87,18 +110,21 @@ export class AudioEngine {
   load(src: string): void {
     if (this.currentSrc === src && this.status !== 'error') return
 
+    const element = this.ensureElement()
     this.currentSrc = src
     this.currentTime = 0
     this.duration = 0
     this.errorMessage = null
     this.status = 'loading'
-    this.element.src = src
-    this.element.load()
+    element.src = src
+    element.load()
     this.emit()
   }
 
   play(): void {
-    if (this.status === 'idle' || this.status === 'loading') return
+    if (this.status === 'idle' || this.status === 'loading' || !this.element) {
+      return
+    }
 
     if (this.status === 'completed') {
       this.element.currentTime = 0
@@ -126,14 +152,16 @@ export class AudioEngine {
   }
 
   pause(): void {
-    if (this.status !== 'playing') return
+    if (this.status !== 'playing' || !this.element) return
     this.element.pause()
     this.status = 'paused'
     this.emit()
   }
 
   stop(): void {
-    if (this.status === 'idle' || this.status === 'loading') return
+    if (this.status === 'idle' || this.status === 'loading' || !this.element) {
+      return
+    }
     this.element.pause()
     this.element.currentTime = 0
     this.currentTime = 0
@@ -145,7 +173,8 @@ export class AudioEngine {
     if (
       this.status === 'idle' ||
       this.status === 'loading' ||
-      this.status === 'error'
+      this.status === 'error' ||
+      !this.element
     ) {
       return
     }
@@ -160,11 +189,14 @@ export class AudioEngine {
 
   setVolume(volume: number): void {
     this.volume = clamp(volume, 0, 1)
-    this.element.volume = this.volume
+    if (this.element) {
+      this.element.volume = this.volume
+    }
     this.emit()
   }
 
   destroy(): void {
+    if (!this.element) return
     this.element.pause()
     this.element.removeEventListener(
       'loadedmetadata',
@@ -177,7 +209,7 @@ export class AudioEngine {
   }
 
   private readonly handleLoadedMetadata = (): void => {
-    if (Number.isFinite(this.element.duration)) {
+    if (this.element && Number.isFinite(this.element.duration)) {
       this.duration = this.element.duration
     }
     if (this.status === 'loading') {
@@ -194,7 +226,9 @@ export class AudioEngine {
   }
 
   private readonly handleTimeUpdate = (): void => {
-    this.currentTime = this.element.currentTime
+    if (this.element) {
+      this.currentTime = this.element.currentTime
+    }
     this.emit()
   }
 

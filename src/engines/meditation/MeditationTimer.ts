@@ -34,8 +34,8 @@ const DEFAULT_TICK_INTERVAL_MS = 250
  */
 export class MeditationTimer {
   private durationSeconds: number
-  private readonly onTick?: (state: MeditationTimerState) => void
-  private readonly onComplete?: (state: MeditationTimerState) => void
+  private onTick?: (state: MeditationTimerState) => void
+  private onComplete?: (state: MeditationTimerState) => void
   private readonly tickIntervalMs: number
   private readonly now: () => number
 
@@ -55,6 +55,17 @@ export class MeditationTimer {
     this.onComplete = options.onComplete
     this.tickIntervalMs = options.tickIntervalMs ?? DEFAULT_TICK_INTERVAL_MS
     this.now = options.now ?? Date.now
+  }
+
+  /** Updates the tick/completion callbacks in place, e.g. so a React
+   * binding can keep them pointing at the latest render's closures
+   * without recreating the engine. Omitted keys are left unchanged. */
+  setCallbacks(callbacks: {
+    onTick?: (state: MeditationTimerState) => void
+    onComplete?: (state: MeditationTimerState) => void
+  }): void {
+    if ('onTick' in callbacks) this.onTick = callbacks.onTick
+    if ('onComplete' in callbacks) this.onComplete = callbacks.onComplete
   }
 
   getState(): MeditationTimerState {

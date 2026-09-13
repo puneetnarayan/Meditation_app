@@ -58,10 +58,13 @@ describe('AudioEngine', () => {
     })
   })
 
-  it('applies an initial volume to the underlying element', () => {
+  it('applies an initial volume to the underlying element once loaded', () => {
     const { engine, element } = setup({ initialVolume: 0.4 })
-    expect(element.volume).toBe(0.4)
     expect(engine.getState().volume).toBe(0.4)
+
+    engine.load('/audio/track.mp3')
+
+    expect(element.volume).toBe(0.4)
   })
 
   it('transitions idle -> loading -> ready on load and loadedmetadata', () => {
@@ -230,6 +233,8 @@ describe('AudioEngine', () => {
 
   it('setVolume() clamps between 0 and 1 and updates the element', () => {
     const { engine, element } = setup()
+    engine.load('/audio/track.mp3')
+
     engine.setVolume(1.5)
     expect(engine.getState().volume).toBe(1)
     expect(element.volume).toBe(1)
@@ -237,6 +242,15 @@ describe('AudioEngine', () => {
     engine.setVolume(-0.2)
     expect(engine.getState().volume).toBe(0)
     expect(element.volume).toBe(0)
+  })
+
+  it('setVolume() before anything is loaded still updates engine state', () => {
+    const { engine, element } = setup()
+    engine.setVolume(0.3)
+    expect(engine.getState().volume).toBe(0.3)
+    // No element has been created yet, so nothing to assert on `element`
+    // beyond it not having been touched.
+    expect(element.volume).toBe(1)
   })
 
   it('tracks currentTime via timeupdate events', () => {
