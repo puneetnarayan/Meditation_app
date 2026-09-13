@@ -1,0 +1,15 @@
+.sideNav {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  width: 220px;
+  flex-shrink: 0;
+  padding: var(--space-lg) var(--space-sm);
+  border-right: 1px solid var(--color-border);
+}
+
+@media (min-width: 768px) {
+  .sideNav {
+    display: flex;
+  }
+}

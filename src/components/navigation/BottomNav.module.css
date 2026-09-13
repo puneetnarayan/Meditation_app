@@ -1,0 +1,27 @@
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-nav);
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-2xs) var(--space-xs)
+    max(var(--space-2xs), env(safe-area-inset-bottom));
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+.item {
+  flex-direction: column;
+  gap: var(--space-3xs);
+  flex: 1;
+  min-height: 56px;
+  font-size: var(--font-size-xs);
+}
+
+@media (min-width: 768px) {
+  .bottomNav {
+    display: none;
+  }
+}

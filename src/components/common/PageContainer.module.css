@@ -1,0 +1,12 @@
+.container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-lg) var(--space-3xl);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: var(--space-2xl) var(--space-xl) var(--space-3xl);
+  }
+}
