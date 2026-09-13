@@ -6,8 +6,8 @@ import { MeditationCard } from '../components/library/MeditationCard'
 import { PageContainer } from '../components/common/PageContainer'
 import { categories } from '../data/categories'
 import { instructors } from '../data/instructors'
-import { meditations } from '../data/meditations'
 import { useFavorites } from '../hooks/useFavorites'
+import { getAllMeditations } from '../services/content/contentStore'
 import { getPreferences } from '../services/preferences/preferencesStore'
 import { getRecentlyPlayed } from '../services/recentlyPlayed/recentlyPlayedStore'
 import { getMeditationById } from '../utils/meditationQueries'
@@ -21,6 +21,7 @@ const MAX_RECENTLY_PLAYED_SHOWN = 3
 export function HomePage() {
   const [preferences] = useState(() => getPreferences())
   const { isFavorite, toggleFavorite } = useFavorites()
+  const meditations = getAllMeditations()
 
   const showOnboardingBanner =
     !preferences.onboardingCompleted && !preferences.onboardingSkipped

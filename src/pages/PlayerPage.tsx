@@ -1,7 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { PageContainer } from '../components/common/PageContainer'
 import { MeditationPlayer } from '../components/meditation/MeditationPlayer'
-import { meditations } from '../data/meditations'
+import { getAllMeditations } from '../services/content/contentStore'
 import { markDayCompleted } from '../services/programs/programProgressStore'
 import { getMeditationById } from '../utils/meditationQueries'
 
@@ -9,7 +9,7 @@ export function PlayerPage() {
   const { id } = useParams<{ id: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const meditation = id ? getMeditationById(meditations, id) : undefined
+  const meditation = id ? getMeditationById(getAllMeditations(), id) : undefined
 
   // Present only when this session was started from a program day (see
   // ProgramDetailsPage) — used to advance that program's progress

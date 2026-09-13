@@ -3,8 +3,8 @@ import { PageContainer } from '../components/common/PageContainer'
 import { MeditationCard } from '../components/library/MeditationCard'
 import { categories } from '../data/categories'
 import { instructors } from '../data/instructors'
-import { meditations } from '../data/meditations'
 import { useFavorites } from '../hooks/useFavorites'
+import { getAllMeditations } from '../services/content/contentStore'
 import styles from './FavoritesPage.module.css'
 
 const categoryById = new Map(categories.map((c) => [c.id, c]))
@@ -12,7 +12,9 @@ const instructorById = new Map(instructors.map((i) => [i.id, i]))
 
 export function FavoritesPage() {
   const { favoriteIds, toggleFavorite } = useFavorites()
-  const favorites = meditations.filter((m) => favoriteIds.includes(m.id))
+  const favorites = getAllMeditations().filter((m) =>
+    favoriteIds.includes(m.id),
+  )
 
   return (
     <PageContainer>

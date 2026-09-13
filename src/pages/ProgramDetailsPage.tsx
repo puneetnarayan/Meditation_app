@@ -1,10 +1,10 @@
 import { Link, useParams } from 'react-router-dom'
 import { EmptyState } from '../components/common/EmptyState'
 import { PageContainer } from '../components/common/PageContainer'
-import { meditations } from '../data/meditations'
 import { programItems } from '../data/programItems'
 import { programs } from '../data/programs'
 import { useProgramProgress } from '../hooks/useProgramProgress'
+import { getAllMeditations } from '../services/content/contentStore'
 import { getMeditationById } from '../utils/meditationQueries'
 import { getProgramById, getProgramItems } from '../utils/programQueries'
 import { formatSecondsAsClock } from '../utils/time'
@@ -33,6 +33,7 @@ export function ProgramDetailsPage() {
   }
 
   const items = getProgramItems(programItems, program.id)
+  const meditations = getAllMeditations()
 
   return (
     <PageContainer>

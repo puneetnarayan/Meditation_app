@@ -5,8 +5,8 @@ import { IconButton } from '../components/common/IconButton'
 import { PageContainer } from '../components/common/PageContainer'
 import { categories } from '../data/categories'
 import { instructors } from '../data/instructors'
-import { meditations } from '../data/meditations'
 import { useFavorites } from '../hooks/useFavorites'
+import { getAllMeditations } from '../services/content/contentStore'
 import { getMeditationById } from '../utils/meditationQueries'
 import { formatSecondsAsClock } from '../utils/time'
 import { toTitleCase } from '../utils/text'
@@ -15,7 +15,7 @@ import styles from './MeditationDetailsPage.module.css'
 export function MeditationDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const meditation = id ? getMeditationById(meditations, id) : undefined
+  const meditation = id ? getMeditationById(getAllMeditations(), id) : undefined
   const { isFavorite, toggleFavorite } = useFavorites()
 
   if (!meditation) {

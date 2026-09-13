@@ -8,8 +8,8 @@ import {
 } from '../../types'
 import { categories } from '../../data/categories'
 import { instructors } from '../../data/instructors'
-import { meditations } from '../../data/meditations'
 import { useFavorites } from '../../hooks/useFavorites'
+import { getAllMeditations } from '../../services/content/contentStore'
 import {
   queryMeditations,
   type MeditationSortBy,
@@ -42,7 +42,7 @@ export function LibraryBrowser({ category }: LibraryBrowserProps) {
   const [sortBy, setSortBy] = useState<MeditationSortBy>('title')
   const { isFavorite, toggleFavorite } = useFavorites()
 
-  const results = queryMeditations(meditations, {
+  const results = queryMeditations(getAllMeditations(), {
     categoryId: category?.id,
     difficulty: difficulty || undefined,
     type: type || undefined,

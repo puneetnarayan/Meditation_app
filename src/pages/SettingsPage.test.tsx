@@ -66,4 +66,12 @@ describe('SettingsPage', () => {
       screen.getByRole('link', { name: 'Personalize your experience' }),
     ).toHaveAttribute('href', '/onboarding')
   })
+
+  it('links to the content management admin tool', () => {
+    renderSettings()
+
+    expect(
+      screen.getByRole('link', { name: 'Content management' }),
+    ).toHaveAttribute('href', '/admin')
+  })
 })

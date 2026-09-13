@@ -76,6 +76,16 @@ export function SettingsPage() {
       </section>
 
       <RemindersSection />
+
+      <section className={styles.section}>
+        <h2>Advanced</h2>
+        <p className={styles.sectionDescription}>
+          Internal tool for managing the meditation catalog.
+        </p>
+        <Link to="/admin" className={styles.adminLink}>
+          Content management
+        </Link>
+      </section>
     </PageContainer>
   )
 }
