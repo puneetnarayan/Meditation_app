@@ -18,3 +18,19 @@ export function formatSecondsAsClock(totalSeconds: number): string {
 
   return `${minutes}:${paddedSeconds}`
 }
+
+/** Formats a total number of minutes as a compact human label, e.g.
+ * 45 -> "45 min", 125 -> "2h 5m", 120 -> "2h". Negative or non-finite
+ * input is clamped to 0. */
+export function formatMinutesAsDuration(totalMinutes: number): string {
+  const safeMinutes = Number.isFinite(totalMinutes)
+    ? Math.max(0, Math.round(totalMinutes))
+    : 0
+
+  const hours = Math.floor(safeMinutes / 60)
+  const minutes = safeMinutes % 60
+
+  if (hours === 0) return `${minutes} min`
+  if (minutes === 0) return `${hours}h`
+  return `${hours}h ${minutes}m`
+}

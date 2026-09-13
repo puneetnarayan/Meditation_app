@@ -1,6 +1,10 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Meditation } from '../../types'
+import {
+  clearSessions,
+  getSessions,
+} from '../../services/progress/sessionStore'
 import { MeditationPlayer } from './MeditationPlayer'
 
 const fixture: Meditation = {
@@ -19,10 +23,12 @@ const fixture: Meditation = {
 describe('MeditationPlayer', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    clearSessions()
   })
 
   afterEach(() => {
     vi.useRealTimers()
+    clearSessions()
   })
 
   it('renders the meditation title, description and initial duration', () => {
@@ -103,5 +109,60 @@ describe('MeditationPlayer', () => {
       'aria-label',
       'Session progress',
     )
+  })
+
+  it('records a completed session when the meditation finishes naturally', () => {
+    render(<MeditationPlayer meditation={fixture} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    act(() => {
+      vi.advanceTimersByTime(10_000)
+    })
+
+    const sessions = getSessions()
+    expect(sessions).toHaveLength(1)
+    expect(sessions[0]).toMatchObject({
+      meditationId: 'med-test',
+      durationSeconds: 10,
+      elapsedSeconds: 10,
+      completed: true,
+    })
+  })
+
+  it('does not record a second session if End is pressed after completion', () => {
+    render(<MeditationPlayer meditation={fixture} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    act(() => {
+      vi.advanceTimersByTime(10_000)
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'End' }))
+
+    expect(getSessions()).toHaveLength(1)
+  })
+
+  it('records an incomplete session when ended early', () => {
+    render(<MeditationPlayer meditation={fixture} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    act(() => {
+      vi.advanceTimersByTime(3000)
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'End' }))
+
+    const sessions = getSessions()
+    expect(sessions).toHaveLength(1)
+    expect(sessions[0]).toMatchObject({
+      elapsedSeconds: 3,
+      completed: false,
+    })
+  })
+
+  it('does not record a session if ended before ever starting', () => {
+    render(<MeditationPlayer meditation={fixture} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'End' }))
+
+    expect(getSessions()).toHaveLength(0)
   })
 })

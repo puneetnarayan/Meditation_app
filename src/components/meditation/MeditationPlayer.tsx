@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import type { Meditation } from '../../types'
 import { useMeditationTimer } from '../../hooks/useMeditationTimer'
 import { useAudioEngine } from '../../hooks/useAudioEngine'
+import { recordSession } from '../../services/progress/sessionStore'
 import { formatSecondsAsClock } from '../../utils/time'
 import { toTitleCase } from '../../utils/text'
 import { Button } from '../common/Button'
@@ -21,9 +22,23 @@ export function MeditationPlayer({
 }: MeditationPlayerProps) {
   const { audioUrl } = meditation
 
+  // When the current attempt began, for recording a session. Cleared once
+  // recorded so a later "End" click (e.g. right after natural completion)
+  // doesn't record it a second time.
+  const startedAtRef = useRef<Date | null>(null)
+
   const timer = useMeditationTimer(meditation.durationSeconds, {
     onComplete: () => {
       if (audioUrl) audio.stop()
+      if (startedAtRef.current) {
+        recordSession({
+          meditationId: meditation.id,
+          startedAt: startedAtRef.current,
+          durationSeconds: meditation.durationSeconds,
+          elapsedSeconds: meditation.durationSeconds,
+        })
+        startedAtRef.current = null
+      }
     },
   })
 
@@ -50,12 +65,14 @@ export function MeditationPlayer({
     if (timer.state.status === 'paused') {
       timer.resume()
     } else {
+      startedAtRef.current = new Date()
       timer.start()
     }
     if (audioUrl) audio.play()
   }
 
   function handleRestart() {
+    startedAtRef.current = new Date()
     timer.restart()
     if (audioUrl) {
       audio.seek(0)
@@ -64,8 +81,20 @@ export function MeditationPlayer({
   }
 
   function handleEnd() {
+    const elapsedSeconds = timer.state.elapsedSeconds
     timer.end()
     if (audioUrl) audio.stop()
+
+    if (startedAtRef.current && elapsedSeconds > 0) {
+      recordSession({
+        meditationId: meditation.id,
+        startedAt: startedAtRef.current,
+        durationSeconds: meditation.durationSeconds,
+        elapsedSeconds,
+      })
+    }
+    startedAtRef.current = null
+
     onExit?.()
   }
 
