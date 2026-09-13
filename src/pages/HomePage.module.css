@@ -1,0 +1,49 @@
+.onboardingBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-elevated);
+}
+
+.onboardingText {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.onboardingLink {
+  flex: none;
+  font-weight: 600;
+}
+
+.section {
+  margin-top: var(--space-xl);
+}
+
+.section:first-of-type {
+  margin-top: 0;
+}
+
+.singleCard {
+  max-width: 420px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

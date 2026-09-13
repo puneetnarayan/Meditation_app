@@ -1,17 +1,11 @@
+import { Link } from 'react-router-dom'
 import { Input } from '../components/common/Input'
 import { PageContainer } from '../components/common/PageContainer'
 import { Select } from '../components/common/Select'
 import { Switch } from '../components/common/Switch'
+import { DURATION_OPTIONS } from '../config/durationOptions'
 import { usePreferences } from '../hooks/usePreferences'
 import styles from './SettingsPage.module.css'
-
-const DURATION_OPTIONS: { label: string; seconds: number }[] = [
-  { label: '5 min', seconds: 300 },
-  { label: '10 min', seconds: 600 },
-  { label: '15 min', seconds: 900 },
-  { label: '20 min', seconds: 1200 },
-  { label: '30 min', seconds: 1800 },
-]
 
 export function SettingsPage() {
   const { preferences, updatePreferences } = usePreferences()
@@ -66,6 +60,18 @@ export function SettingsPage() {
             </option>
           ))}
         </Select>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Personalization</h2>
+        <p className={styles.sectionDescription}>
+          A few quick questions help tailor what's recommended on Home.
+        </p>
+        <Link to="/onboarding" className={styles.personalizeLink}>
+          {preferences.onboardingCompleted
+            ? 'Update your preferences'
+            : 'Personalize your experience'}
+        </Link>
       </section>
     </PageContainer>
   )

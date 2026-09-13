@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import { getPreferences } from '../services/preferences/preferencesStore'
 import { SettingsPage } from './SettingsPage'
 
@@ -9,12 +10,20 @@ function clear() {
   delete document.documentElement.dataset.motion
 }
 
+function renderSettings() {
+  return render(
+    <MemoryRouter>
+      <SettingsPage />
+    </MemoryRouter>,
+  )
+}
+
 describe('SettingsPage', () => {
   beforeEach(clear)
   afterEach(clear)
 
   it('renders current preferences', () => {
-    render(<SettingsPage />)
+    renderSettings()
 
     expect(screen.getByLabelText(/Volume/)).toHaveValue('0.8')
     expect(screen.getByLabelText('Reduce motion')).not.toBeChecked()
@@ -23,7 +32,7 @@ describe('SettingsPage', () => {
 
   it('updates and persists the reduced-motion preference', async () => {
     const user = userEvent.setup()
-    render(<SettingsPage />)
+    renderSettings()
 
     await user.click(screen.getByLabelText('Reduce motion'))
 
@@ -33,7 +42,7 @@ describe('SettingsPage', () => {
 
   it('updates and persists the preferred duration', async () => {
     const user = userEvent.setup()
-    render(<SettingsPage />)
+    renderSettings()
 
     await user.selectOptions(screen.getByLabelText('Preferred duration'), '600')
 
@@ -41,12 +50,20 @@ describe('SettingsPage', () => {
   })
 
   it('updates and persists audio volume', () => {
-    render(<SettingsPage />)
+    renderSettings()
 
     fireEvent.change(screen.getByLabelText(/Volume/), {
       target: { value: '0.3' },
     })
 
     expect(getPreferences().audioVolume).toBe(0.3)
+  })
+
+  it('links to onboarding, inviting personalization when it has not been done', () => {
+    renderSettings()
+
+    expect(
+      screen.getByRole('link', { name: 'Personalize your experience' }),
+    ).toHaveAttribute('href', '/onboarding')
   })
 })

@@ -7,6 +7,12 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   audioVolume: 0.8,
   reducedMotion: false,
   preferredDurationSeconds: undefined,
+  primaryGoal: undefined,
+  experienceLevel: undefined,
+  preferredTimeOfDay: undefined,
+  contentPreferences: [],
+  onboardingCompleted: false,
+  onboardingSkipped: false,
 }
 
 export function getPreferences(): UserPreferences {
