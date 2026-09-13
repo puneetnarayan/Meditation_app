@@ -1,0 +1,143 @@
+/* Design tokens — the single source of truth for spacing, color,
+   typography, radius, shadow and motion values. Components should read
+   these variables rather than hard-coding values.
+
+   Breakpoint reference (used directly in component media queries, since
+   custom properties cannot be interpolated into @media conditions
+   without extra tooling):
+     --bp-sm: 480px   small phones
+     --bp-md: 768px   large phones / small tablets
+     --bp-lg: 1024px  tablets / small laptops
+     --bp-xl: 1280px  desktop
+*/
+
+:root {
+  color-scheme: light dark;
+
+  /* Color — calm, warm, non-clinical */
+  --color-bg: #faf8f5;
+  --color-bg-elevated: #ffffff;
+  --color-text: #2b2621;
+  --color-text-muted: #6b6259;
+  --color-border: #e6e0d8;
+  --color-primary: #6a8a7a;
+  --color-primary-hover: #597667;
+  --color-primary-contrast: #ffffff;
+  --color-accent: #c98a5e;
+  --color-danger: #b3564a;
+  --color-danger-contrast: #ffffff;
+  --color-focus-ring: #4d7cff;
+  --color-overlay: rgb(30 26 22 / 45%);
+
+  /* Spacing */
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  /* Shadow — soft, low-contrast */
+  --shadow-sm: 0 1px 2px rgb(43 38 33 / 6%);
+  --shadow-md: 0 4px 16px rgb(43 38 33 / 8%);
+  --shadow-lg: 0 12px 32px rgb(43 38 33 / 12%);
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+
+  /* Motion */
+  --transition-fast: 120ms ease;
+  --transition-normal: 200ms ease;
+  --focus-ring-width: 3px;
+
+  /* Layering */
+  --z-nav: 100;
+  --z-modal-backdrop: 200;
+  --z-modal: 210;
+  --z-toast: 220;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1a17;
+    --color-bg-elevated: #262320;
+    --color-text: #ede8e2;
+    --color-text-muted: #a8a097;
+    --color-border: #3a352f;
+    --color-primary: #8fb3a1;
+    --color-primary-hover: #a3c4b3;
+    --color-primary-contrast: #17251e;
+    --color-accent: #dba077;
+    --color-danger: #d98074;
+    --color-danger-contrast: #2a1210;
+    --color-focus-ring: #86a6ff;
+    --color-overlay: rgb(0 0 0 / 60%);
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 20%);
+    --shadow-md: 0 4px 16px rgb(0 0 0 / 28%);
+    --shadow-lg: 0 12px 32px rgb(0 0 0 / 36%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-normal: 0ms;
+  }
+}
+
+/* Manual theme override (for a future Settings > Appearance control).
+   Takes precedence over the OS preference above. */
+:root[data-theme='dark'] {
+  --color-bg: #1c1a17;
+  --color-bg-elevated: #262320;
+  --color-text: #ede8e2;
+  --color-text-muted: #a8a097;
+  --color-border: #3a352f;
+  --color-primary: #8fb3a1;
+  --color-primary-hover: #a3c4b3;
+  --color-primary-contrast: #17251e;
+  --color-accent: #dba077;
+  --color-danger: #d98074;
+  --color-danger-contrast: #2a1210;
+  --color-focus-ring: #86a6ff;
+  --color-overlay: rgb(0 0 0 / 60%);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 20%);
+  --shadow-md: 0 4px 16px rgb(0 0 0 / 28%);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 36%);
+}
+
+:root[data-theme='light'] {
+  --color-bg: #faf8f5;
+  --color-bg-elevated: #ffffff;
+  --color-text: #2b2621;
+  --color-text-muted: #6b6259;
+  --color-border: #e6e0d8;
+  --color-primary: #6a8a7a;
+  --color-primary-hover: #597667;
+  --color-primary-contrast: #ffffff;
+  --color-accent: #c98a5e;
+  --color-danger: #b3564a;
+  --color-danger-contrast: #ffffff;
+  --color-focus-ring: #4d7cff;
+  --color-overlay: rgb(30 26 22 / 45%);
+  --shadow-sm: 0 1px 2px rgb(43 38 33 / 6%);
+  --shadow-md: 0 4px 16px rgb(43 38 33 / 8%);
+  --shadow-lg: 0 12px 32px rgb(43 38 33 / 12%);
+}
