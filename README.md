@@ -14,7 +14,8 @@ npm run dev
 ## Scripts
 
 - `npm run dev` — start the dev server
-- `npm run build` — type-check and build for production
+- `npm run build` — type-check and build for production (also emits the
+  PWA service worker and manifest via vite-plugin-pwa)
 - `npm run preview` — preview the production build locally
 - `npm run lint` — run ESLint
 - `npm run format` / `npm run format:check` — run/check Prettier
@@ -35,9 +36,12 @@ src/
 ├── pages/        route-level screens
 ├── layouts/      shared page layouts
 ├── hooks/        reusable React hooks
-├── services/     external integrations (audio, database, auth, analytics)
+├── services/     integrations and persistence (storage, progress, favorites,
+│                 preferences, recentlyPlayed today; database/auth/analytics
+│                 reserved for when a backend is introduced)
 ├── engines/      framework-agnostic business logic (meditation, breathing, audio)
-├── store/        app state
+├── store/        reserved for a future state-management library; unused so
+│                 far — local state lives in hooks backed by services/storage
 ├── data/         static/mock content data
 ├── types/        shared TypeScript types
 ├── utils/        pure utility functions

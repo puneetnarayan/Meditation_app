@@ -8,6 +8,8 @@ import {
 export interface UseAudioEngineOptions {
   onComplete?: () => void
   initialVolume?: number
+  /** For continuous ambient sound rather than a guided session. */
+  loop?: boolean
   /** Injectable element factory, primarily for tests. */
   createElement?: () => AudioElementLike
 }
@@ -41,6 +43,7 @@ export function useAudioEngine(
     () =>
       new AudioEngine({
         initialVolume: options.initialVolume,
+        loop: options.loop,
         createElement: options.createElement,
         onStateChange: setState,
       }),

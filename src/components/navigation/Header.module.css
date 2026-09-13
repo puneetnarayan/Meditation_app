@@ -4,6 +4,7 @@
   z-index: var(--z-nav);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 56px;
   padding: 0 var(--space-lg);
   background: var(--color-bg);
@@ -15,4 +16,28 @@
   font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--color-text);
+}
+
+.favoritesLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: var(--font-size-lg);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.favoritesLink:hover {
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
+}
+
+.active {
+  color: var(--color-primary);
 }

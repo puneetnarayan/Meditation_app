@@ -20,8 +20,12 @@
   --color-text: #2b2621;
   --color-text-muted: #6b6259;
   --color-border: #e6e0d8;
-  --color-primary: #6a8a7a;
-  --color-primary-hover: #597667;
+  /* Darker than it may look needed — #6a8a7a (a lighter sage that reads
+     fine as a background) fails WCAG AA (3.6:1) when used as text or as
+     a button background under white text. This shade holds ~4.7-5:1
+     against both --color-bg and white. */
+  --color-primary: #597667;
+  --color-primary-hover: #486254;
   --color-primary-contrast: #ffffff;
   --color-accent: #c98a5e;
   --color-danger: #b3564a;
@@ -102,6 +106,14 @@
   }
 }
 
+/* Manual reduced-motion override, set by Settings > Appearance.
+   Opt-in only — see applyDocumentPreferences — so it can add the same
+   effect as the OS-level query above but never remove it. */
+:root[data-motion='reduced'] {
+  --transition-fast: 0ms;
+  --transition-normal: 0ms;
+}
+
 /* Manual theme override (for a future Settings > Appearance control).
    Takes precedence over the OS preference above. */
 :root[data-theme='dark'] {
@@ -129,8 +141,8 @@
   --color-text: #2b2621;
   --color-text-muted: #6b6259;
   --color-border: #e6e0d8;
-  --color-primary: #6a8a7a;
-  --color-primary-hover: #597667;
+  --color-primary: #597667;
+  --color-primary-hover: #486254;
   --color-primary-contrast: #ffffff;
   --color-accent: #c98a5e;
   --color-danger: #b3564a;

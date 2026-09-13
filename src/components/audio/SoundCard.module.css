@@ -1,0 +1,21 @@
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.text {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+.description {
+  margin: var(--space-3xs) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
