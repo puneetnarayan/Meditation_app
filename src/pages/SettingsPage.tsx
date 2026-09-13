@@ -3,6 +3,7 @@ import { Input } from '../components/common/Input'
 import { PageContainer } from '../components/common/PageContainer'
 import { Select } from '../components/common/Select'
 import { Switch } from '../components/common/Switch'
+import { RemindersSection } from '../components/settings/RemindersSection'
 import { DURATION_OPTIONS } from '../config/durationOptions'
 import { usePreferences } from '../hooks/usePreferences'
 import styles from './SettingsPage.module.css'
@@ -73,6 +74,8 @@ export function SettingsPage() {
             : 'Personalize your experience'}
         </Link>
       </section>
+
+      <RemindersSection />
     </PageContainer>
   )
 }
