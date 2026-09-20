@@ -11,6 +11,7 @@ const MeditationDetailsPage = lazy(
 const ProgressPage = lazy(() => import('./pages/ProgressPage'))
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage'))
 const SoundsPage = lazy(() => import('./pages/SoundsPage'))
+const BellTimerPage = lazy(() => import('./pages/BellTimerPage'))
 const ProgramsPage = lazy(() => import('./pages/ProgramsPage'))
 const ProgramDetailsPage = lazy(() => import('./pages/ProgramDetailsPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
@@ -42,6 +43,7 @@ function App() {
             <Route path="progress" element={<ProgressPage />} />
             <Route path="favorites" element={<FavoritesPage />} />
             <Route path="sounds" element={<SoundsPage />} />
+            <Route path="bell-timer" element={<BellTimerPage />} />
             <Route path="programs" element={<ProgramsPage />} />
             <Route path="programs/:id" element={<ProgramDetailsPage />} />
             <Route path="settings" element={<SettingsPage />} />
