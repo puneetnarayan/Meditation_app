@@ -1,0 +1,71 @@
+.timer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.timer header {
+  text-align: center;
+}
+
+.timer header h1 {
+  margin: 0 0 var(--space-2xs);
+}
+
+.timer header p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.countdown {
+  text-align: center;
+  font-size: clamp(2.5rem, 10vw, 3.5rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.status {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.progressLabel {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.bellsRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.bellsRow input {
+  width: 80px;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+}
+
+.note {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}

@@ -10,6 +10,7 @@ export function LibraryPage() {
       <nav className={styles.exploreLinks} aria-label="Other ways to explore">
         <Link to="/sounds">Ambient sounds →</Link>
         <Link to="/programs">Multi-day programs →</Link>
+        <Link to="/bell-timer">Bell timer →</Link>
       </nav>
       <LibraryBrowser />
     </PageContainer>
